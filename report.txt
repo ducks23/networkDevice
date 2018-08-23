@@ -1,0 +1,19 @@
+From what i can tell everything works well. I didn't quite optimize it but
+it doesnt leak packets
+
+
+Summary of threads:
+
+The recieve thread first gets a packet descriptor from the fpds and inits/registers it. the thread awaits for a packet to come from nd and the thread also
+gets a packet from the pool buffer and if that doesnt work it gets one 
+from the fpds.
+the thread then puts it in the rec_buf[x] depending on what the pid is
+for that packet. if writing to the rec buf fails it is put back in the fpds
+lastly the packets are init'd and registered with the network driver.
+
+The send thread does a blocking read on the send buf to get a packet and then 
+it sends it to the networkdevice n times. If it fails there is an error
+message. if it is sent successfully there is a confirmation message.
+after the rest of the sendpacket. the packet is put in the pool buf and if
+that fails it is sent back to fpds.
+
